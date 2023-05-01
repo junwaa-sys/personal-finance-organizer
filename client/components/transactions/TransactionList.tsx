@@ -10,7 +10,7 @@ import DataTable, {
 
 interface Props {
   transData: models.Transactions[]
-  unhideField: (row: models.UpdateTransaction) => void
+  unhideField: (data: models.Transactions) => void
 }
 
 export default function TransactionList(props: Props) {
@@ -69,7 +69,7 @@ export default function TransactionList(props: Props) {
               noDataComponent={'no data'}
               dense={true}
               pagination
-              onRowDoubleClicked={(row, event) => {
+              onRowDoubleClicked={(row) => {
                 props.unhideField(row)
               }}
             />

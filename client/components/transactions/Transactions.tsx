@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks'
 import { useEffect, useState } from 'react'
 import TransactionList from './TransactionList'
 import EditTransaction from './EditTranscation'
+import CsvImporter from './CsvImporter'
 
 export default function Transactions() {
   const [showField, setShowField] = useState(false)
@@ -24,15 +25,23 @@ export default function Transactions() {
     const token = getAccessTokenSilently().then((token) => {
       dispatch(getTransactions(token))
     })
-  }, [dispatch, getAccessTokenSilently, editData])
+  }, [dispatch, getAccessTokenSilently, editData, updatedTransaction])
 
   function unhideField(data: models.Transactions) {
     setEditData(data)
-    setShowField(true)
   }
 
-  function hideField() {
-    setShowField(false)
+  async function newTransaction(transData: models.NewTransaction) {
+    const token = await getAccessTokenSilently()
+    dispatch(addTransaction(token, transData))
+  }
+
+  async function editTransaction(
+    transId: number,
+    transData: models.UpdateTransaction
+  ) {
+    console.log({ transData, transId })
+    await dispatch(updateTransaction(transId, transData))
   }
 
   if (!receivedTransactions.data) {
@@ -40,15 +49,12 @@ export default function Transactions() {
   } else {
     return (
       <>
-        <EditTransaction
-          show={showField}
-          data={editData}
-          hideField={hideField}
-        />
+        <EditTransaction data={editData} editTransaction={editTransaction} />
         <TransactionList
           transData={receivedTransactions?.data}
-          unhideField={unhideField(row)}
+          unhideField={unhideField}
         />
+        <CsvImporter />
       </>
     )
   }
